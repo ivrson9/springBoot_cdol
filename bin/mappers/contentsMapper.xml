@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cdol.template.mapper.ContentsMapper">
+
+	<select id="contentsList" resultType="com.cdol.template.contents.dto.ContentsVO">
+		SELECT * FROM service WHERE isDel=false
+	</select>
+	
+	<select id="menuList" resultType="com.cdol.template.menu.dto.MenuVO">
+		SELECT * FROM menu m LEFT JOIN service s ON m.s_no = s.s_no WHERE m.isDel=false
+	</select>
+</mapper>

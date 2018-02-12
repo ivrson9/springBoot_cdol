@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cdol.template.mapper.BoardMapper">
+	
+	<select id="boardList" parameterType="map" resultType="com.cdol.template.board.dto.BoardVO">
+		SELECT b_no, b_title, DATE_FORMAT(b_date, '%Y/%m/%d') b_date, b_hit, b.write_id id, b_password, ip_address, name, b.isDel,
+				(SELECT count(*) AS cnt FROM comment c WHERE c.m_name = '${boardName}' AND c.b_no = b.b_no AND c.isDel = FALSE) AS com_cnt
+		FROM ${boardName} b LEFT JOIN user u ON b.write_id=u.email
+		WHERE b.isDel = false
+		<if test="search_cont != ''">
+			<choose>
+			<when test="search_type == 'all'">
+				AND b_title LIKE '%${search_cont}%' OR b_content LIKE '%${search_cont}%'
+			</when>
+			<otherwise>
+				AND ${search_type} LIKE '%${search_cont}%'
+			</otherwise>
+			</choose>
+		</if>
+		<choose>
+			<when test="list_num == 1">
+				ORDER BY b_no desc LIMIT 0, 10
+			</when>
+			<otherwise>
+				<bind name="start" value="(list_num-1)*10" />
+				ORDER BY b_no desc LIMIT #{start} , 10
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="boardCountView" parameterType="map" resultType="int">
+		SELECT count(*) FROM ${boardName}
+		WHERE isDel=false
+		<if test="search_cont != ''">
+			<choose>
+			<when test="search_type == 'all'">
+				AND b_title LIKE '%${search_cont}%' OR b_content LIKE '%${search_cont}%'
+			</when>
+			<otherwise>
+				AND ${search_type} LIKE '%${search_cont}%'
+			</otherwise>
+			</choose>
+		</if>
+	</select>
+</mapper>
